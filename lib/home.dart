@@ -24,14 +24,6 @@ class _HomePageState extends State<HomePage> {
     allRecipes;
   }
 
-  // Future<void> loadRecipes() async {
-  //   final recipeService = RecipeService();
-  //   final recipes = await recipeService.loadRecipes();
-  //   setState(() {
-  //     _recipes = recipes;
-  //   });
-  // }
-
   Stream<List<Recipe>> allRecipes = RecipeService.fetchAllRecipes();
 
   @override
@@ -86,7 +78,8 @@ class _HomePageState extends State<HomePage> {
                         title: recipe.title,
                         notes: recipe.notes,
                         ingredients: recipe.ingredients,
-                        servings: recipe.servings);
+                        servings: recipe.servings,
+                    image: recipe.imageFile);
                   });
             }
             return CircularProgressIndicator();

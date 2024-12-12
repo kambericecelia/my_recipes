@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:recipes_app/home.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:flutter/services.dart';
+
+import 'image_picker.dart';
 
 class AddRecipe extends StatefulWidget {
   static const String id = 'add_screen';
@@ -16,12 +21,22 @@ class _AddRecipeState extends State<AddRecipe> {
   final _titleController = TextEditingController();
   final _servingsController = TextEditingController();
   final _notesController = TextEditingController();
-
+  File? _selectedImage;
   String title = '';
   String servings = '';
   String notes = '';
   List<String> ingredients = [];
   Recipe? recipe;
+
+  Future _pickImageFromGallery() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      _selectedImage = File(image!.path);
+      if (_selectedImage == null) {
+        _selectedImage = AssetImage('assets/food_background.jpeg') as File?;
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -30,16 +45,21 @@ class _AddRecipeState extends State<AddRecipe> {
     _ingredientControllers.add(TextEditingController());
   }
 
-  void _addIngredientCard(String ingredient) {
-    setState(() {
-      _ingredientControllers.add(ingredient as TextEditingController);
-    });
-  }
-
   void _removeIngredient(int index) {
     setState(() {
       _ingredientControllers.removeAt(index);
     });
+  }
+
+  Future<void> _pickImage() async {
+    final selectedImage =
+        await ImagePickerHelper.showImagePickerDialog(context);
+
+    if (selectedImage != null) {
+      setState(() {
+        _selectedImage = selectedImage;
+      });
+    }
   }
 
   @override
@@ -64,12 +84,13 @@ class _AddRecipeState extends State<AddRecipe> {
                         title: title,
                         notes: notes,
                         servings: servings,
-                        ingredients: ingredients);
+                        ingredients: ingredients,
+                    imageFile: _selectedImage);
                     _titleController.clear();
                     _notesController.clear();
                     _servingsController.clear();
                     _ingredientControllers.clear();
-                    recipe?.saveToFirestore();
+                    recipe?.saveRecipe();
                     print(recipe);
                   });
                   Navigator.pop(context);
@@ -167,7 +188,7 @@ class _AddRecipeState extends State<AddRecipe> {
                                       )),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return "Pleas add an ingredient!";
+                                      return "Please add an ingredient!";
                                     }
                                     return null;
                                   },
@@ -193,14 +214,61 @@ class _AddRecipeState extends State<AddRecipe> {
                         _ingredientControllers.add(TextEditingController());
                       });
                     },
-                    icon: Icon(Icons.add),
-                    label: Text("Add ingredient"),
+                    icon: Icon(
+                      Icons.add,
+                      size: 20,
+                      color: Colors.black87,
+                    ),
+                    label: Text("Add ingredient",
+                        style: TextStyle(fontSize: 17, color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                         minimumSize: Size.fromHeight(45),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15))),
                   ),
                 ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                  child: ElevatedButton.icon(
+                    onPressed: _pickImage,
+                    icon: Icon(
+                      Icons.add_a_photo,
+                      size: 20,
+                      color: Colors.black87,
+                    ),
+                    label: Text(
+                      "Add image",
+                      style: TextStyle(fontSize: 17, color: Colors.black),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(45),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                    ),
+                  ),
+                ),
+                if (_selectedImage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Image.file(_selectedImage!,
+                            width: double.infinity,
+                            height: 200,
+                            fit: BoxFit.cover),
+                        IconButton(
+                          icon: Icon(Icons.remove_circle, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              _selectedImage = null;
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                  ),
                 SizedBox(
                   height: 10,
                 ),

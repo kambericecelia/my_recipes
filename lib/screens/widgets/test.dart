@@ -1,185 +1,135 @@
-import 'package:flutter/material.dart';
-
-class AddRecipeScreen extends StatefulWidget {
-  const AddRecipeScreen({Key? key}) : super(key: key);
-
-  @override
-  _AddRecipeScreenState createState() => _AddRecipeScreenState();
-}
-
-class _AddRecipeScreenState extends State<AddRecipeScreen> {
-  // Form key for validation
-  final _formKey = GlobalKey<FormState>();
-
-  // Text controllers
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _servingsController = TextEditingController();
-  final TextEditingController _notesController = TextEditingController();
-
-  // Ingredients list management
-  List<TextEditingController> _ingredientControllers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // Start with one ingredient field
-    _addIngredientField();
-  }
-
-  // Add a new ingredient text field
-  void _addIngredientField() {
-    setState(() {
-      _ingredientControllers.add(TextEditingController());
-    });
-  }
-
-  // Remove an ingredient text field
-  void _removeIngredientField(int index) {
-    setState(() {
-      _ingredientControllers[index].dispose();
-      _ingredientControllers.removeAt(index);
-    });
-  }
-
-  // Save recipe method
-  void _saveRecipe() {
-    if (_formKey.currentState!.validate()) {
-      // Collect ingredients
-      List<String> ingredients = _ingredientControllers
-          .map((controller) => controller.text.trim())
-          .where((ingredient) => ingredient.isNotEmpty)
-          .toList();
-
-      // Here you would typically save the recipe
-      // (e.g., to a database or state management solution)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Recipe Saved Successfully!')),
-      );
-
-      // Optional: Clear form or navigate back
-      Navigator.pop(context, {
-        'title': _titleController.text,
-        'servings': _servingsController.text,
-        'notes': _notesController.text,
-        'ingredients': ingredients,
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    // Clean up controllers
-    _titleController.dispose();
-    _servingsController.dispose();
-    _notesController.dispose();
-    for (var controller in _ingredientControllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add New Recipe'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _saveRecipe,
-          ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.0),
-          children: [
-            // Title Field
-            TextFormField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: 'Recipe Title',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.restaurant_menu),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a recipe title';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16),
-
-            // Servings Field
-            TextFormField(
-              controller: _servingsController,
-              decoration: InputDecoration(
-                labelText: 'Number of Servings',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.people),
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter number of servings';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16),
-
-            // Ingredients Section
-            Text(
-              'Ingredients',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            ...List.generate(
-              _ingredientControllers.length,
-                  (index) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _ingredientControllers[index],
-                        decoration: InputDecoration(
-                          labelText: 'Ingredient ${index + 1}',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.kitchen),
-                        ),
-                      ),
-                    ),
-                    if (_ingredientControllers.length > 1)
-                      IconButton(
-                        icon: Icon(Icons.remove_circle, color: Colors.red),
-                        onPressed: () => _removeIngredientField(index),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            ElevatedButton.icon(
-              onPressed: _addIngredientField,
-              icon: Icon(Icons.add),
-              label: Text('Add Ingredient'),
-            ),
-            SizedBox(height: 16),
-
-            // Notes Field
-            TextFormField(
-              controller: _notesController,
-              decoration: InputDecoration(
-                labelText: 'Recipe Notes',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.notes),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// import 'dart:io';
+//
+// import 'package:flutter/material.dart';
+// import 'package:image_picker/image_picker.dart';
+//
+// class ImagePickerHelper {
+//   static Future<File?> showImagePickerDialog(BuildContext context) async {
+//     return showModalBottomSheet<File>(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return SafeArea(
+//           child: Wrap(
+//             children: <Widget>[
+//               ListTile(
+//                 leading: Icon(Icons.photo_library),
+//                 title: Text('Photo Library'),
+//                 onTap: () async {
+//                   Navigator.of(context).pop(
+//                       await _pickImage(ImageSource.gallery)
+//                   );
+//                 },
+//               ),
+//               ListTile(
+//                 leading: Icon(Icons.camera_alt),
+//                 title: Text('Camera'),
+//                 onTap: () async {
+//                   Navigator.of(context).pop(
+//                       await _pickImage(ImageSource.camera)
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+//
+//   static Future<File?> _pickImage(ImageSource source) async {
+//     final picker = ImagePicker();
+//     final pickedFile = await picker.pickImage(
+//       source: source,
+//       // Optional parameters you might want to add
+//       maxWidth: 800,
+//       maxHeight: 600,
+//       imageQuality: 80, // Compress the image
+//     );
+//
+//     if (pickedFile != null) {
+//       return File(pickedFile.path);
+//     }
+//     return null;
+//   }
+// }
+//
+// // In your AddRecipe widget, modify the image picking button:
+// class AddRecipe extends StatefulWidget {
+//   // ... existing code ...
+//
+//   @override
+//   State<AddRecipe> createState() => _AddRecipeState();
+// }
+//
+// class _AddRecipeState extends State<AddRecipe> {
+//   // ... other existing properties ...
+//
+//   Future<void> _pickImage() async {
+//     final selectedImage = await ImagePickerHelper.showImagePickerDialog(context);
+//
+//     if (selectedImage != null) {
+//       setState(() {
+//         _selectedImage = selectedImage;
+//       });
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       // ... other existing code ...
+//       body: SafeArea(
+//         child: SingleChildScrollView(
+//           child: Column(
+//             children: [
+//               // ... other widgets ...
+//
+//               // Replace your existing "Add image" button with this:
+//               Padding(
+//                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+//                 child: ElevatedButton.icon(
+//                   onPressed: _pickImage,
+//                   icon: Icon(Icons.add_a_photo),
+//                   label: Text("Add Image"),
+//                   style: ElevatedButton.styleFrom(
+//                     minimumSize: Size.fromHeight(45),
+//                     shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(15)
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//
+//               // Image preview
+//               if (_selectedImage != null)
+//                 Padding(
+//                   padding: const EdgeInsets.all(18.0),
+//                   child: Stack(
+//                     alignment: Alignment.topRight,
+//                     children: [
+//                       Image.file(
+//                         _selectedImage!,
+//                         width: double.infinity,
+//                         height: 200,
+//                         fit: BoxFit.cover,
+//                       ),
+//                       IconButton(
+//                         icon: Icon(Icons.remove_circle, color: Colors.red),
+//                         onPressed: () {
+//                           setState(() {
+//                             _selectedImage = null;
+//                           });
+//                         },
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//
+//               // ... rest of your existing code ...
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

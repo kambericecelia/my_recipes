@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/widgets/recipe_details.dart';
 
@@ -5,14 +7,15 @@ class RecipeCard extends StatelessWidget {
   final String title;
   final String notes;
   final String servings;
+  final dynamic image;
 
   final List<String> ingredients;
   RecipeCard(
       {required this.title,
       required this.notes,
       required this.servings,
-
-      required this.ingredients});
+      required this.ingredients,
+      this.image});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -50,7 +53,7 @@ class RecipeCard extends StatelessWidget {
               Colors.black.withOpacity(0.35),
               BlendMode.multiply,
             ),
-            image: AssetImage('assets/$title.jpeg'),
+            image: image != null ? NetworkImage(image) : AssetImage('assets/food_background.jpeg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -86,7 +89,7 @@ class RecipeCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.star,
+                          Icons.people,
                           color: Colors.yellow,
                           size: 18,
                         ),
