@@ -7,7 +7,7 @@ class RecipeCard extends StatelessWidget {
   final String title;
   final String notes;
   final String servings;
-  final dynamic image;
+  final String? imageUrl;
 
   final List<String> ingredients;
   RecipeCard(
@@ -15,7 +15,7 @@ class RecipeCard extends StatelessWidget {
       required this.notes,
       required this.servings,
       required this.ingredients,
-      this.image});
+      this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,7 +23,7 @@ class RecipeCard extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RecipeDetailScreen(
+              builder: (context) => RecipeDetails(
                   title: title,
                   notes: notes,
                   servings: servings,
@@ -53,7 +53,7 @@ class RecipeCard extends StatelessWidget {
               Colors.black.withOpacity(0.35),
               BlendMode.multiply,
             ),
-            image: image != null ? NetworkImage(image) : AssetImage('assets/food_background.jpeg'),
+            image: imageUrl != null ? NetworkImage(imageUrl!) : AssetImage('assets/food_background.jpeg'),
             fit: BoxFit.cover,
           ),
         ),

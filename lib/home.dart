@@ -79,21 +79,11 @@ class _HomePageState extends State<HomePage> {
                         notes: recipe.notes,
                         ingredients: recipe.ingredients,
                         servings: recipe.servings,
-                    image: recipe.imageFile);
+                        imageUrl: recipe.imageUrl);
                   });
             }
             return CircularProgressIndicator();
           }),
-      // body: ListView.builder(
-      //     itemCount: _recipes.length,
-      //     itemBuilder: (context, index) {
-      //       final recipe = _recipes[index];
-      //       return RecipeCard(
-      //           title: recipe.title,
-      //           notes: recipe.notes,
-      //           ingredients: recipe.ingredients,
-      //           servings: recipe.servings);
-      //     }),
     );
   }
 }

@@ -28,15 +28,15 @@ class _AddRecipeState extends State<AddRecipe> {
   List<String> ingredients = [];
   Recipe? recipe;
 
-  Future _pickImageFromGallery() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    setState(() {
-      _selectedImage = File(image!.path);
-      if (_selectedImage == null) {
-        _selectedImage = AssetImage('assets/food_background.jpeg') as File?;
-      }
-    });
-  }
+  // Future _pickImageFromGallery() async {
+  //   final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //   setState(() {
+  //     _selectedImage = File(image!.path);
+  //     if (_selectedImage == null) {
+  //       _selectedImage = AssetImage('assets/food_background.jpeg') as File?;
+  //     }
+  //   });
+  // }
 
   @override
   void initState() {
@@ -85,7 +85,7 @@ class _AddRecipeState extends State<AddRecipe> {
                         notes: notes,
                         servings: servings,
                         ingredients: ingredients,
-                    imageFile: _selectedImage);
+                        imageFile: _selectedImage);
                     _titleController.clear();
                     _notesController.clear();
                     _servingsController.clear();

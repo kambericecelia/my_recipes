@@ -7,9 +7,10 @@ class Recipe {
   final String title;
   final String notes;
   final String servings;
+  String? imageUrl;
   final File? imageFile;
   final List<String> ingredients;
-  String? imageUrl;
+
 
   Recipe(
       {required this.title,
@@ -55,7 +56,6 @@ class Recipe {
           .child('recipe_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
       try {
         await storageRef.putFile(imageFile!);
-
         imageUrl = await storageRef.getDownloadURL();
       } catch (e) {
         print('Error uploading image: $e');

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class RecipeDetailScreen extends StatelessWidget {
+class RecipeDetails extends StatelessWidget {
 
   final String title;
   final String notes;
   final String servings;
   final List<String> ingredients;
 
-  const RecipeDetailScreen({
+  const RecipeDetails({
     Key? key,
     required this.title,
     required this.notes,
