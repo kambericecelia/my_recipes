@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/widgets/recipe_details.dart';
 
 class RecipeCard extends StatelessWidget {
+  final String? recipeId;
   final String title;
   final String notes;
   final String servings;
   final String? imageUrl;
 
+
   final List<String> ingredients;
   RecipeCard(
-      {required this.title,
+      {this.recipeId,
+        required this.title,
       required this.notes,
       required this.servings,
       required this.ingredients,
@@ -24,10 +27,12 @@ class RecipeCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => RecipeDetails(
+                recipeId: recipeId,
                   title: title,
                   notes: notes,
                   servings: servings,
-                  ingredients: ingredients),
+                  ingredients: ingredients,
+              imageUrl: imageUrl,),
             ));
       },
       child: Container(
@@ -53,7 +58,7 @@ class RecipeCard extends StatelessWidget {
               Colors.black.withOpacity(0.35),
               BlendMode.multiply,
             ),
-            image: imageUrl != null ? NetworkImage(imageUrl!) : AssetImage('assets/food_background.jpeg'),
+            image: imageUrl != "" ? NetworkImage(imageUrl!) : AssetImage('assets/food_background.jpeg'),
             fit: BoxFit.cover,
           ),
         ),

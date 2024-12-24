@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
 import 'package:recipes_app/screens/widgets/recipe_card.dart';
 
-import 'package:recipes_app/services/recipe_service.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
@@ -15,21 +13,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Recipe> _recipes = [];
 
   @override
   void initState() {
     super.initState();
-    //loadRecipes();
-    allRecipes;
   }
-
-  Stream<List<Recipe>> allRecipes = RecipeService.fetchAllRecipes();
+  Stream<List<Recipe>> allRecipes = Recipe.fetchAllRecipes();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.white,
       bottomNavigationBar: ClipRRect(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         child: BottomAppBar(
@@ -75,6 +68,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     final recipe = recipes[index];
                     return RecipeCard(
+                        recipeId: recipe.id,
                         title: recipe.title,
                         notes: recipe.notes,
                         ingredients: recipe.ingredients,

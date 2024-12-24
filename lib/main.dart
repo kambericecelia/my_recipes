@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'home_page',
       routes: {
         HomePage.id: (context) => HomePage(),
-        AddRecipe.id: (context) => AddRecipe()
+        AddRecipe.id: (context) => AddRecipe(),
       },
     );
   }

@@ -1,7 +1,8 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:recipes_app/home.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:flutter/services.dart';
@@ -25,25 +26,37 @@ class _AddRecipeState extends State<AddRecipe> {
   String title = '';
   String servings = '';
   String notes = '';
+  String? recipeId;
   List<String> ingredients = [];
   Recipe? recipe;
-
-  // Future _pickImageFromGallery() async {
-  //   final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-  //   setState(() {
-  //     _selectedImage = File(image!.path);
-  //     if (_selectedImage == null) {
-  //       _selectedImage = AssetImage('assets/food_background.jpeg') as File?;
-  //     }
-  //   });
-  // }
+  bool updatePage = false;
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _ingredientControllers.add(TextEditingController());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args =
+    ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (args != null && recipeId == null) {
+      setState(() {
+        recipeId = args['recipeId'];
+        _titleController.text = args['title'] ?? '';
+        _servingsController.text = args['servings'] ?? '';
+        _notesController.text = args['notes'] ?? '';
+        //_selectedImage = args['imageUrl'] as File?;
+        final ingredientsList = args['ingredients'] as List<String>?;
+        if (ingredientsList != null) {
+          for (var ingredient in ingredientsList) {
+            _ingredientControllers
+                .add(TextEditingController(text: ingredient));
+          }
+        }
+      });
+    }
   }
+
+
 
   void _removeIngredient(int index) {
     setState(() {
@@ -66,13 +79,16 @@ class _AddRecipeState extends State<AddRecipe> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Add New Recipe"),
+          title: recipeId == null || recipeId!.isEmpty
+              ? Text("Add New Recipe")
+              : Text("Update Recipe"),
           actions: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
               child: ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
+                    print("ID $recipeId");
                     title = _titleController.text;
                     notes = _notesController.text;
                     servings = _servingsController.text;
@@ -80,23 +96,37 @@ class _AddRecipeState extends State<AddRecipe> {
                     for (var ingredientController in _ingredientControllers) {
                       ingredients.add(ingredientController.text.trim());
                     }
-                    recipe = Recipe(
-                        title: title,
-                        notes: notes,
-                        servings: servings,
-                        ingredients: ingredients,
-                        imageFile: _selectedImage);
+                    if (title.isNotEmpty ||
+                        servings.isNotEmpty ||
+                        ingredients.isNotEmpty) {
+                      recipe = Recipe(
+                          title: title,
+                          notes: notes,
+                          servings: servings,
+                          ingredients: ingredients,
+                          imageFile: _selectedImage);
+                      print(recipe);
+                    }
+                    if (recipeId == null) {
+                      recipe?.saveRecipe();
+                    } else {
+                      print(recipe);
+                      recipe?.updateRecipe(
+                          recipeId!, title, servings, notes, ingredients);
+                    }
                     _titleController.clear();
                     _notesController.clear();
                     _servingsController.clear();
                     _ingredientControllers.clear();
-                    recipe?.saveRecipe();
+
                     print(recipe);
                   });
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, HomePage.id);
                 },
                 icon: Icon(Icons.save),
-                label: Text("Save"),
+                label: recipeId == null || recipeId!.isEmpty
+                    ? Text("Save")
+                    : Text("Update"),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -114,25 +144,27 @@ class _AddRecipeState extends State<AddRecipe> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
-                  child: TextFormField(
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.restaurant_menu),
-                        hintText: "Recipe Title",
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        )),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter a recipe title!";
-                      }
-                      return null;
-                    },
+                Form(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                    child: TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.restaurant_menu),
+                          hintText: "Recipe Title",
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          )),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a recipe title!";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
                 Padding(
