@@ -14,7 +14,7 @@ class Recipe {
 
   Recipe(
       {this.id,
-        required this.title,
+      required this.title,
       required this.notes,
       required this.servings,
       required this.ingredients,
@@ -85,23 +85,45 @@ class Recipe {
         .doc(recipeId)
         .delete();
   }
-  Future<void> updateRecipe (String recipeId, String title, String servings, String notes, List<String> ingredients) async {
+
+  Future<void> updateRecipe(String recipeId, String title, String servings,
+      String notes, List<String> ingredients, File? newImageFile, String? existingImageUrl) async {
+    String? imageUrl = existingImageUrl;
+
+    // Check if a new image file is provided
+    if (newImageFile != null) {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('recipe_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+      try {
+        await storageRef.putFile(newImageFile);
+        imageUrl = await storageRef.getDownloadURL();
+      } catch (e) {
+        print("Error uploading image: $e");
+        throw Exception("Failed to upload the image. Please try again.");
+      }
+    }
+
+    // Prepare data for update
+    final recipeData = {
+      "title": title,
+      "notes": notes,
+      "servings": servings,
+      "ingredients": ingredients,
+      "imageUrl": imageUrl
+    };
+
     try {
-      final recipeData = {
-        "title": title,
-        "notes": notes,
-        "servings": servings,
-        "ingredients": ingredients,
-        //"imageUrl": imageUrl
-      };
       await FirebaseFirestore.instance
           .collection('recipes')
           .doc(recipeId)
           .update(recipeData);
       print("Recipe updated successfully!");
-    }catch(e){
+    } catch (e) {
       print("Failed to update the recipe: $e");
       throw Exception("Could not update the recipe. Please try again");
     }
   }
+
 }
