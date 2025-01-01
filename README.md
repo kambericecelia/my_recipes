@@ -29,16 +29,24 @@ The **Recipe App** is a Flutter-based application designed for cooking enthusias
 
 ## Screenshots
 Here are some screenshots of the app in action:
-### Login Page
 
+### Recipes
 
 ![List Recipes](assets/recipes.jpeg)
 
+### Recipes details
+
 ![Recipe Details](assets/recipe_details.png)
+
+### Add new recipe
 
 ![Add Recipes](assets/add_recipe.png)
 
+### Update recipe
+
 ![Update Recipe](assets/update_recipe.png)
+
+### Delete recipe
 
 ![Delete Recipes](assets/delete_recipe.png)
 
