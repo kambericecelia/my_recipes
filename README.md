@@ -32,7 +32,7 @@ Here are some screenshots of the app in action:
 
 ### Recipes
 
-![List Recipes](assets/recipes.jpeg)
+![List Recipes](assets/recipes.png)
 
 ### Recipes details
 
