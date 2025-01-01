@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
             }else if(snapshot.hasError){
               return Center(child: Text("Error loading recipes!"),);
             }else if(!snapshot.hasData || snapshot.data!.isEmpty){
-              return Center(child: Text("You do not have any recipes yet!"),);
+              return Center(child: Text("You do not have any recipes yet! Try to add one!"),);
             }
             if (snapshot.hasData) {
               List<Recipe> recipes = snapshot.data!;
