@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class Recipe {
   final String? id;
@@ -21,6 +19,8 @@ class Recipe {
       this.imageFile,
       this.imageUrl});
 
+
+
   factory Recipe.fromMap(Map<String, dynamic> map, String documentId) {
     return Recipe(
       id: documentId,
@@ -37,93 +37,5 @@ class Recipe {
     return 'Recipe {title: $title,notes: $notes, servings: $servings, ingredients $ingredients}';
   }
 
-  Future<void> saveRecipe() async {
-    if (imageFile != null) {
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('recipe_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
-      try {
-        await storageRef.putFile(imageFile!);
-        imageUrl = await storageRef.getDownloadURL();
-      } catch (e) {
-        print('Error uploading image: $e');
-      }
-    }
-    final recipeData = {
-      "title": title,
-      "notes": notes,
-      "servings": servings,
-      "ingredients": ingredients,
-      "imageUrl": imageUrl
-    };
-
-    try {
-      final docRef = await FirebaseFirestore.instance
-          .collection('recipes')
-          .add(recipeData);
-      await docRef.update({"id": docRef.id});
-      print("Recipe saved successfully with ID: ${docRef.id}");
-    } catch (e) {
-      print("Error saving recipe: $e");
-    }
-  }
-
-  static Stream<List<Recipe>> fetchAllRecipes() {
-    return FirebaseFirestore.instance
-        .collection('recipes')
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return Recipe.fromMap(doc.data(), doc.id);
-      }).toList();
-    });
-  }
-
-  static Future<void> deleteRecipe(String recipeId) async {
-    await FirebaseFirestore.instance
-        .collection('recipes')
-        .doc(recipeId)
-        .delete();
-  }
-
-  Future<void> updateRecipe(String recipeId, String title, String servings,
-      String notes, List<String> ingredients, File? newImageFile, String? existingImageUrl) async {
-    String? imageUrl = existingImageUrl;
-
-    // Check if a new image file is provided
-    if (newImageFile != null) {
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('recipe_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-      try {
-        await storageRef.putFile(newImageFile);
-        imageUrl = await storageRef.getDownloadURL();
-      } catch (e) {
-        print("Error uploading image: $e");
-        throw Exception("Failed to upload the image. Please try again.");
-      }
-    }
-
-    // Prepare data for update
-    final recipeData = {
-      "title": title,
-      "notes": notes,
-      "servings": servings,
-      "ingredients": ingredients,
-      "imageUrl": imageUrl
-    };
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('recipes')
-          .doc(recipeId)
-          .update(recipeData);
-      print("Recipe updated successfully!");
-    } catch (e) {
-      print("Failed to update the recipe: $e");
-      throw Exception("Could not update the recipe. Please try again");
-    }
-  }
 
 }

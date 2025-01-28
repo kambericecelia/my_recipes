@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/home.dart';
+import 'package:recipes_app/screens/widgets/home.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
+import 'package:recipes_app/services/recipe_service.dart';
 
 import '../../models/recipe.dart';
 
 class RecipeDetails extends StatelessWidget {
+
   final String? recipeId;
   final String title;
   final String notes;
@@ -12,7 +14,8 @@ class RecipeDetails extends StatelessWidget {
   final String? imageUrl;
   final List<String> ingredients;
 
-  const RecipeDetails({
+
+  RecipeDetails({
     Key? key,
     this.recipeId,
     this.imageUrl,
@@ -22,6 +25,8 @@ class RecipeDetails extends StatelessWidget {
     required this.ingredients,
   }) : super(key: key);
   static const String id = 'recipe_details';
+  final RecipeService recipeService = RecipeService();
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,7 @@ class RecipeDetails extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () async {
                               if (recipeId != null) {
-                                await Recipe.deleteRecipe(recipeId!);
+                                await recipeService.deleteRecipe(recipeId!);
                               }
                               Navigator.pushNamed(context, HomePage.id);
                             },

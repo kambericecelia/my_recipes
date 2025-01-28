@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:recipes_app/home.dart';
+import 'package:recipes_app/screens/widgets/home.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/services/recipe_service.dart';
 
 import 'image_picker.dart';
 
@@ -16,6 +17,7 @@ class AddRecipe extends StatefulWidget {
 }
 
 class _AddRecipeState extends State<AddRecipe> {
+  final RecipeService recipeService = RecipeService();
   final _ingredientControllers = <TextEditingController>[];
   final _titleController = TextEditingController();
   final _servingsController = TextEditingController();
@@ -32,10 +34,8 @@ class _AddRecipeState extends State<AddRecipe> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final args =
-    ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null && recipeId == null) {
       setState(() {
         recipeId = args['recipeId'];
@@ -47,15 +47,12 @@ class _AddRecipeState extends State<AddRecipe> {
         final ingredientsList = args['ingredients'] as List<String>?;
         if (ingredientsList != null) {
           for (var ingredient in ingredientsList) {
-            _ingredientControllers
-                .add(TextEditingController(text: ingredient));
+            _ingredientControllers.add(TextEditingController(text: ingredient));
           }
         }
       });
     }
   }
-
-
 
   void _removeIngredient(int index) {
     setState(() {
@@ -85,101 +82,48 @@ class _AddRecipeState extends State<AddRecipe> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
               child: ElevatedButton.icon(
-                  onPressed: () async {
-                    setState(() {
-                      title = _titleController.text;
-                      notes = _notesController.text;
-                      servings = _servingsController.text;
-                      ingredients.clear();
-                      for (var ingredientController in _ingredientControllers) {
-                        ingredients.add(ingredientController.text.trim());
-                      }
-                    });
-
-                    if (title.isEmpty || servings.isEmpty) {
-                      Fluttertoast.showToast(
-                        msg: "Please provide the title for the recipe and the servings!",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                      );
-                      return;
+                onPressed: () async {
+                  setState(() {
+                    title = _titleController.text;
+                    notes = _notesController.text;
+                    servings = _servingsController.text;
+                    ingredients.clear();
+                    for (var ingredientController in _ingredientControllers) {
+                      ingredients.add(ingredientController.text.trim());
                     }
-
-                    if (recipeId == null) {
-                      recipe = Recipe(
-                        title: title,
-                        notes: notes,
-                        servings: servings,
-                        ingredients: ingredients,
-                        imageFile: _selectedImage,
-                      );
-                      await recipe?.saveRecipe();
-                    } else {
-                      recipe = Recipe(
-                        title: title,
-                        notes: notes,
-                        servings: servings,
-                        ingredients: ingredients,
-                      );
-                      await recipe?.updateRecipe(
-                        recipeId!,
-                        title,
-                        servings,
-                        notes,
-                        ingredients,
-                        _selectedImage,
-                        recipeImageUrl,
-                      );
-                    }
-
-                    Navigator.pushNamed(context, HomePage.id);
+                  });
+                  if (title.isEmpty || servings.isEmpty) {
+                    Fluttertoast.showToast(
+                      msg:
+                          "Please provide the title and servings for the recipe!",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
                   }
-
-                  // onPressed: () {
-                //   setState(() {
-                //     title = _titleController.text;
-                //     notes = _notesController.text;
-                //     servings = _servingsController.text;
-                //     ingredients.clear();
-                //     for (var ingredientController in _ingredientControllers) {
-                //       ingredients.add(ingredientController.text.trim());
-                //     }
-                //     if (title.isNotEmpty ||
-                //         servings.isNotEmpty) {
-                //       recipe = Recipe(
-                //           title: title,
-                //           notes: notes,
-                //           servings: servings,
-                //           ingredients: ingredients,
-                //           imageFile: _selectedImage);
-                //       print(recipe);
-                //     }else{
-                //       Fluttertoast.showToast(
-                //         msg: "Please provide the title for the recipe and the servings!",
-                //         toastLength: Toast.LENGTH_SHORT,
-                //         gravity: ToastGravity.BOTTOM,
-                //         backgroundColor: Colors.red,
-                //         textColor: Colors.white,
-                //       );
-                //     }
-                //     if (recipeId == null) {
-                //       recipe?.saveRecipe();
-                //     } else {
-                //       recipe?.updateRecipe(
-                //           recipeId!, title, servings, notes, ingredients, _selectedImage);
-                //     }
-                //     _titleController.clear();
-                //     _notesController.clear();
-                //     _servingsController.clear();
-                //     _ingredientControllers.clear();
-                //
-                //     print(recipe);
-                //   });
-                //   Navigator.pushNamed(context, HomePage.id);
-                // },
-                ,icon: Icon(Icons.save),
+                  if (recipeId == null) {
+                    recipe = Recipe(
+                      title: title,
+                      notes: notes,
+                      servings: servings,
+                      ingredients: ingredients,
+                      imageFile: _selectedImage,
+                    );
+                    await recipeService.saveRecipe(recipe!);
+                  } else {
+                    recipe = Recipe(
+                      title: title,
+                      notes: notes,
+                      servings: servings,
+                      ingredients: ingredients,
+                    );
+                    await recipeService.updateRecipe(recipe!, recipeId!, _selectedImage,recipeImageUrl,);
+                  }
+                  Navigator.pushNamed(context, HomePage.id);
+                },
+                icon: Icon(Icons.save),
                 label: recipeId == null || recipeId!.isEmpty
                     ? Text("Save")
                     : Text("Update"),
@@ -315,59 +259,10 @@ class _AddRecipeState extends State<AddRecipe> {
                             borderRadius: BorderRadius.circular(15))),
                   ),
                 ),
-                // Padding(
-                //   padding:
-                //       const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
-                //   child: ElevatedButton.icon(
-                //     onPressed: _pickImage,
-                //     icon: Icon(
-                //       Icons.add_a_photo,
-                //       size: 20,
-                //       color: Colors.black87,
-                //     ),
-                //     label: recipeId == null || recipeId!.isEmpty ? Text("Add image",
-                //       style: TextStyle(fontSize: 17, color: Colors.black)) :
-                //     Text("Update image",
-                //       style: TextStyle(fontSize: 17, color: Colors.black)),
-                //     style: ElevatedButton.styleFrom(
-                //       minimumSize: Size.fromHeight(45),
-                //       shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(15)),
-                //     ),
-                //   ),
-                // ),
 
-                //if (_selectedImage != null)
-                  // Padding(
-                  //   padding: const EdgeInsets.all(18.0),
-                  //   child: Stack(
-                  //     alignment: Alignment.topRight,
-                  //     children: [
-                  //       if(recipeImageUrl !=null && recipeImageUrl!.isNotEmpty)
-                  //         Image.network(recipeImageUrl!,
-                  //           width: double.infinity,
-                  //           height: 200,
-                  //           fit: BoxFit.cover)
-                  //       else
-                  //         Image.asset(
-                  //           'assets/food_background.jpeg',
-                  //           width: double.infinity,
-                  //           height: 200,
-                  //           fit: BoxFit.cover,
-                  //         ),
-                  //       IconButton(
-                  //         icon: Icon(Icons.remove_circle, color: Colors.red),
-                  //         onPressed: () {
-                  //           setState(() {
-                  //             recipeImageUrl = null;
-                  //           });
-                  //         },
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
                   child: ElevatedButton.icon(
                     onPressed: _pickImage,
                     icon: Icon(
@@ -398,24 +293,25 @@ class _AddRecipeState extends State<AddRecipe> {
                         // Display the network image if it exists, otherwise display the selected image
                         _selectedImage != null
                             ? Image.file(
-                          _selectedImage!,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        )
-                            : (recipeImageUrl != null && recipeImageUrl!.isNotEmpty
-                            ? Image.network(
-                          recipeImageUrl!,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        )
-                            : Image.asset(
-                          'assets/food_background.jpeg',
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        )),
+                                _selectedImage!,
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              )
+                            : (recipeImageUrl != null &&
+                                    recipeImageUrl!.isNotEmpty
+                                ? Image.network(
+                                    recipeImageUrl!,
+                                    width: double.infinity,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/food_background.jpeg',
+                                    width: double.infinity,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                  )),
                         // Remove image button
                         IconButton(
                           icon: Icon(Icons.remove_circle, color: Colors.red),
@@ -429,7 +325,6 @@ class _AddRecipeState extends State<AddRecipe> {
                       ],
                     ),
                   ),
-
 
                 SizedBox(
                   height: 10,

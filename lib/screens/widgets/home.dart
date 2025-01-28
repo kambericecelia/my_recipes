@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
+import 'package:recipes_app/screens/widgets/login_page.dart';
 import 'package:recipes_app/screens/widgets/recipe_card.dart';
 
+import '../../services/recipe_service.dart';
 
 class HomePage extends StatefulWidget {
   static const String id = 'home_page';
@@ -13,12 +16,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final RecipeService recipeService = RecipeService();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
   }
-  Stream<List<Recipe>> allRecipes = Recipe.fetchAllRecipes();
+
+  Future<void> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print("SignOut Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,25 +61,41 @@ class _HomePageState extends State<HomePage> {
       ),
       appBar: AppBar(
           title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(Icons.restaurant_menu),
-          SizedBox(
-            width: 10,
+          Row(
+            children: [
+              Icon(Icons.restaurant_menu),
+              SizedBox(
+                width: 10,
+              ),
+              Text('My recipes'),
+            ],
           ),
-          Text('My recipes'),
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.black),
+            onPressed: () {
+              signOut();
+              Navigator.pop(context);
+              Navigator.pushNamed(context, LoginPage.id);
+            },
+          ),
         ],
       )),
-
       body: StreamBuilder<List<Recipe>>(
-          stream: Recipe.fetchAllRecipes(),
+          stream: recipeService.userRecipes(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting){
+            print("LOGGED IN USER $user");
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            }else if(snapshot.hasError){
-              return Center(child: Text("Error loading recipes!"),);
-            }else if(!snapshot.hasData || snapshot.data!.isEmpty){
-              return Center(child: Text("You do not have any recipes yet! Try to add one!"),);
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text("Error loading recipes!"),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Text("You do not have any recipes yet! Try to add one!"),
+              );
             }
             if (snapshot.hasData) {
               List<Recipe> recipes = snapshot.data!;

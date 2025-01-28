@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/home.dart';
+import 'package:recipes_app/screens/widgets/home.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
-import 'package:recipes_app/screens/widgets/recipe_details.dart';
+import 'package:recipes_app/screens/widgets/login_page.dart';
+import 'package:recipes_app/screens/widgets/sign_up.dart';
 
 import 'firebase_options.dart';
 
@@ -29,10 +30,12 @@ class MyApp extends StatelessWidget {
           textTheme: const TextTheme(bodySmall: TextStyle(color: Colors.white))),
       home: const HomePage(),
 
-      initialRoute: 'home_page',
+      initialRoute: LoginPage.id,
       routes: {
         HomePage.id: (context) => HomePage(),
         AddRecipe.id: (context) => AddRecipe(),
+        LoginPage.id: (context) => LoginPage(),
+        SignUp.id:(context) => SignUp(),
       },
     );
   }
