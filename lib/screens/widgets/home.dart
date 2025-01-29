@@ -1,15 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/constants.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
-import 'package:recipes_app/screens/widgets/login_page.dart';
-import 'package:recipes_app/screens/widgets/recipe_card.dart';
+import 'package:recipes_app/screens/widgets/login.dart';
+import 'package:recipes_app/components/recipe_card.dart';
 
 import '../../services/recipe_service.dart';
 
 class HomePage extends StatefulWidget {
-  static const String id = 'home_page';
-  const HomePage({super.key});
+  static const String id = 'home';
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: ClipRRect(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         child: BottomAppBar(
-          color: Color.fromRGBO(136, 194, 115, 1),
+          color: ksecondaryColor,
           elevation: 5,
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color kprimaryColor = Color(0xF6F5F5F5);
+const Color ksecondaryColor = Color.fromRGBO(119, 178, 84, 1);
 
 //Text styles for login and signup screen
 
@@ -14,6 +15,6 @@ const bottomTextStyle = TextStyle(
 
 const bottomTextStyleBlue = TextStyle(
   fontSize: 20,
-  color: Colors.blue,
+  color: ksecondaryColor,
   fontWeight: FontWeight.w500,
 );

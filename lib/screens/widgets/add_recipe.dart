@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:recipes_app/constants.dart';
 import 'package:recipes_app/screens/widgets/home.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/services/recipe_service.dart';
 
-import 'image_picker.dart';
+import '../../components/image_picker.dart';
 
 class AddRecipe extends StatefulWidget {
-  static const String id = 'add_screen';
-  const AddRecipe({super.key});
+  static const String id = 'add_recipe';
+  const AddRecipe({Key? key}) : super(key: key);
 
   @override
   State<AddRecipe> createState() => _AddRecipeState();
@@ -119,16 +120,21 @@ class _AddRecipeState extends State<AddRecipe> {
                       servings: servings,
                       ingredients: ingredients,
                     );
-                    await recipeService.updateRecipe(recipe!, recipeId!, _selectedImage,recipeImageUrl,);
+                    await recipeService.updateRecipe(
+                      recipe!,
+                      recipeId!,
+                      _selectedImage,
+                      recipeImageUrl,
+                    );
                   }
                   Navigator.pushNamed(context, HomePage.id);
                 },
-                icon: Icon(Icons.save),
+                //icon: Icon(Icons.save),
                 label: recipeId == null || recipeId!.isEmpty
                     ? Text("Save")
                     : Text("Update"),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: ksecondaryColor,
                     foregroundColor: Colors.white,
                     minimumSize: Size(10, 30),
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -144,48 +150,35 @@ class _AddRecipeState extends State<AddRecipe> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Form(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
-                    child: TextFormField(
-                      controller: _titleController,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.restaurant_menu),
-                          hintText: "Recipe Title",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          )),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please enter a recipe title!";
-                        }
-                        return null;
-                      },
-                    ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+                  child: TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: Icon(Icons.restaurant_menu),
+                        labelText: "Recipe Title",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        )),
                   ),
                 ),
+
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
                   child: TextFormField(
                     controller: _servingsController,
                     decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.people),
-                        hintText: "Number of servings",
                         filled: true,
                         fillColor: Colors.white,
+                        prefixIcon: Icon(Icons.people),
+                        labelText: "Number of servings",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
                         )),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please provide number of servings!";
-                      }
-                      return null;
-                    },
                   ),
                 ),
                 SizedBox(height: 10),
@@ -337,11 +330,12 @@ class _AddRecipeState extends State<AddRecipe> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
+                      prefixIcon: Icon(Icons.notes),
                       labelText: 'Recipe Notes',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      prefixIcon: Icon(Icons.notes),
+
                     ),
                     maxLines: 3,
                   ),

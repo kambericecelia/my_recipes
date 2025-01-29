@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-class Button extends StatelessWidget {
-  const Button({
+import 'package:recipes_app/constants.dart';
+class BottomButton extends StatelessWidget {
+  const BottomButton({
 
     required this.text,
     required this.authFunction,
@@ -16,7 +17,7 @@ final VoidCallback authFunction;
         child: Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: ksecondaryColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(

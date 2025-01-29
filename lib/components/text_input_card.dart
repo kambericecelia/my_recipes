@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class LoginCard extends StatelessWidget {
+class TextInputCard extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool isPassword;
 
-  const LoginCard({
+  const TextInputCard({
     required this.controller,
     required this.hintText,
     required this.isPassword

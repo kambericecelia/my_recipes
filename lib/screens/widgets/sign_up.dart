@@ -1,35 +1,36 @@
-
 import 'package:flutter/material.dart';
-import 'package:recipes_app/components/login_card.dart';
+import 'package:recipes_app/components/text_input_card.dart';
 import 'package:recipes_app/services/auth_service.dart';
 import 'package:recipes_app/components/bottom_button.dart';
 import '../../constants.dart';
-import 'login_page.dart';
-
+import 'login.dart';
 
 class SignUp extends StatefulWidget {
   static const String id = "sign_up";
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-
   Future<void> _handleSignUp() async {
-    final authService = AuthService(email: _emailController.text, password: _passwordController.text, context: context,
-        );
+    final authService = AuthService(
+      email: _emailController.text,
+      password: _passwordController.text,
+      context: context,
+    );
     await authService.signUp(_confirmPasswordController.text);
     _emailController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
-
   }
 
   @override
@@ -46,13 +47,22 @@ class _SignUpState extends State<SignUp> {
               children: [
                 Text("Welcome", style: welcomeTextStyle),
                 SizedBox(height: 15),
-                LoginCard(controller: _emailController, hintText: "Email", isPassword: false,),
-                LoginCard(
-                    controller: _passwordController, hintText: "Password", isPassword: true,),
-                LoginCard(
-                    controller: _confirmPasswordController,
-                    hintText: "Confirm password", isPassword: true,),
-                Button(text: "Sign Up", authFunction: _handleSignUp),
+                TextInputCard(
+                  controller: _emailController,
+                  hintText: "Email",
+                  isPassword: false,
+                ),
+                TextInputCard(
+                  controller: _passwordController,
+                  hintText: "Password",
+                  isPassword: true,
+                ),
+                TextInputCard(
+                  controller: _confirmPasswordController,
+                  hintText: "Confirm password",
+                  isPassword: true,
+                ),
+                BottomButton(text: "Sign Up", authFunction: _handleSignUp),
                 SizedBox(
                   height: 10,
                 ),
@@ -60,10 +70,9 @@ class _SignUpState extends State<SignUp> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Already a member?", style: bottomTextStyle),
-                    SizedBox(width: 5),
+                    SizedBox(width: 2),
                     TextButton(
                       onPressed: () {
-
                         Navigator.pushNamed(context, LoginPage.id);
                       },
                       child: Text("Log in", style: bottomTextStyleBlue),

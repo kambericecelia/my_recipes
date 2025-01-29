@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipes_app/constants.dart';
 import 'package:recipes_app/screens/widgets/home.dart';
 import 'package:recipes_app/screens/widgets/add_recipe.dart';
 import 'package:recipes_app/services/recipe_service.dart';
@@ -36,6 +37,28 @@ class RecipeDetails extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
             child: ElevatedButton.icon(
               onPressed: () {
+                Navigator.pushNamed(context, AddRecipe.id, arguments: {
+                  'recipeId': recipeId,
+                  'title': title,
+                  'servings': servings,
+                  'notes': notes,
+                  'ingredients': ingredients,
+                  'imageUrl': imageUrl,
+                });
+              },
+              label: Text("Update"),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: ksecondaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(10, 30),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15))),
+            )),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
+            child: ElevatedButton.icon(
+              onPressed: () {
                 showDialog(
                     context: context,
                     builder: (context) {
@@ -51,7 +74,7 @@ class RecipeDetails extends StatelessWidget {
                             },
                             child: const Text("Cancel"),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: ksecondaryColor,
                               foregroundColor: Colors.white,
                             ),
                           ),
@@ -81,28 +104,7 @@ class RecipeDetails extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15))),
             )),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(5, 10, 10, 10),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, AddRecipe.id, arguments: {
-                  'recipeId': recipeId,
-                  'title': title,
-                  'servings': servings,
-                  'notes': notes,
-                  'ingredients': ingredients,
-                  'imageUrl': imageUrl,
-                });
-              },
-              label: Text("Update"),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(10, 30),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15))),
-            ))
+
       ]),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
