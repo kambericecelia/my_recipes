@@ -136,7 +136,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: ksecondaryColor,
                     foregroundColor: Colors.white,
-                    minimumSize: Size(10, 30),
+                    minimumSize: Size(65, 30),
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15))),
