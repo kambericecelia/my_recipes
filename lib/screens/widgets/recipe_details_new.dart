@@ -8,14 +8,12 @@ import '../../components/confirm_delete_dialog.dart';
 import '../../models/recipe.dart';
 
 class RecipeDetailsNew extends StatelessWidget {
-
   final String? recipeId;
   final String title;
   final String notes;
   final String servings;
   final String? imageUrl;
   final List<String> ingredients;
-
 
   RecipeDetailsNew({
     Key? key,
@@ -28,7 +26,6 @@ class RecipeDetailsNew extends StatelessWidget {
   }) : super(key: key);
   static const String id = 'recipe_details';
   final RecipeService recipeService = RecipeService();
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,170 +72,183 @@ class RecipeDetailsNew extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15))),
             )),
-
       ]),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: CustomPaint(
-              painter: CurvePainter(),
-              child: Container(
-                height: 300,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/tex_mex_bowl.jpg'), // Replace with your image asset
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Column(
+              children: [
+                Opacity(
+                    opacity: 1,
+                    child: ClipPath(
+                      clipper: WaveClipper(),
+                      child: Container(
+                        height: 240,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            colorFilter: ColorFilter.mode(
+                              Colors.black.withOpacity(0.35),
+                              BlendMode.multiply,
+                            ),
+                            image: imageUrl != ""
+                                ? NetworkImage(imageUrl!)
+                                : AssetImage('assets/food_background.jpeg')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    )),
+              ],
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-          // Content
-          Positioned.fill(
-            top: 250,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-              ),
+                  Text(
+                    "Ingredients",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                ),
+                  SizedBox(height: 8),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics:
+                        NeverScrollableScrollPhysics(), // Prevent nested scrolling issues
+                    itemCount: ingredients.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                        leading: Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.green,
+                          size: 20,
+                        ),
+                        title: Text(
+                          ingredients[index],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
 
-              // Container(
-              //   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              //   width: MediaQuery.of(context).size.width,
-              //   height: 140,
-              //   decoration: BoxDecoration(
-              //     image: DecorationImage(
-              //       colorFilter: ColorFilter.mode(
-              //         Colors.black.withOpacity(0.35),
-              //         BlendMode.multiply,
-              //       ),
-              //       image: imageUrl != ""
-              //           ? NetworkImage(imageUrl!)
-              //           : AssetImage('assets/food_background.jpeg')
-              //       as ImageProvider,
-              //       fit: BoxFit.cover,
-              //     ),
-              //   ),
-              // ),
-              // Ingredients Section
-              Text(
-                "Ingredients",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(), // Prevent nested scrolling issues
-                itemCount: ingredients.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                  // Notes Section
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    "Notes",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
                     leading: Icon(
-                      Icons.check_circle_outline,
+                      Icons.reviews_outlined,
                       color: Colors.green,
-                      size: 20,
+                      size: 24,
                     ),
                     title: Text(
-                      ingredients[index],
+                      notes.isEmpty ? 'No notes available' : notes,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: notes.isEmpty ? Colors.grey : Colors.black87,
+                      ),
+                    ),
+                  ),
+
+                  // Servings Section
+                  SizedBox(height: 10),
+                  Text(
+                    "Servings",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      Icons.restaurant,
+                      color: Colors.green,
+                      size: 24,
+                    ),
+                    title: Text(
+                      servings,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  );
-                },
-              ),
-
-              // Notes Section
-              SizedBox(
-                height: 16,
-              ),
-              Text(
-                "Notes",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  Icons.reviews_outlined,
-                  color: Colors.green,
-                  size: 24,
-                ),
-                title: Text(
-                  notes.isEmpty ? 'No notes available' : notes,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: notes.isEmpty ? Colors.grey : Colors.black87,
                   ),
-                ),
+                ],
               ),
-
-              // Servings Section
-              SizedBox(height: 10),
-              Text(
-                "Servings",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  Icons.restaurant,
-                  color: Colors.green,
-                  size: 24,
-                ),
-                title: Text(
-                  servings,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-
       ),
     );
   }
 }
 
-
-class CurvePainter extends CustomPainter {
+class WaveClipper extends CustomClipper<Path> {
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
+  Path getClip(Size size) {
+    debugPrint(size.width.toString());
+    var path = Path();
+    path.lineTo(0, size.height); // Start at the bottom-left corner
 
-    final path = Path()
-      ..lineTo(0, size.height - 50)
-      ..quadraticBezierTo(
-        size.width / 2, size.height,
-        size.width, size.height - 50,
-      )
-      ..lineTo(size.width, 0)
-      ..close();
+    // Create a smooth curve resembling a bowl
+    var firstControlPoint = Offset(size.width / 5, size.height);
+    var firstEndPoint = Offset(size.width * 0.5, size.height - 45);
+    path.quadraticBezierTo(
+      firstControlPoint.dx,
+      firstControlPoint.dy,
+      firstEndPoint.dx,
+      firstEndPoint.dy,
+    );
 
-    canvas.drawPath(path, paint);
+    var secondControlPoint = Offset(size.width * 0.75, size.height - 90);
+    var secondEndPoint = Offset(size.width, size.height - 65);
+    path.quadraticBezierTo(
+      secondControlPoint.dx,
+      secondControlPoint.dy,
+      secondEndPoint.dx,
+      secondEndPoint.dy,
+    );
+
+    path.lineTo(size.width, 0); // Top-right corner
+    path.close(); // Complete the path
+
+    return path;
   }
+  // @override
+  // Path getClip(Size size) {
+  //   debugPrint(size.width.toString());
+  //   var path = Path();
+  //   path.lineTo(0, size.height);
+  //   var firstStart = Offset(size.width / 5, size.height);
+  //   var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
+  //   path.quadraticBezierTo(
+  //       firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+  //
+  //   var secondStart =
+  //       Offset(size.width - (size.width / 3.24), size.height - 105);
+  //   var secondEnd = Offset(size.width, size.height - 10);
+  //   path.quadraticBezierTo(
+  //       secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
+  //   path.lineTo(size.width, 0);
+  //   path.close();
+  //   return path;
+  // }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldReclip(covariant WaveClipper oldClipper) {
+    // TODO: implement shouldReclip
+    return true;
+  }
 }
