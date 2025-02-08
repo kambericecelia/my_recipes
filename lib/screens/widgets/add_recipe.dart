@@ -112,7 +112,7 @@ class _AddRecipeState extends State<AddRecipe> {
                       ingredients: ingredients,
                       imageFile: _selectedImage,
                     );
-                    await recipeService.saveRecipe(recipe!);
+                    await recipeService.saveRecipe(context, recipe!);
                   } else {
                     recipe = Recipe(
                       title: title,
@@ -211,12 +211,6 @@ class _AddRecipeState extends State<AddRecipe> {
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(5),
                                       )),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please add an ingredient!";
-                                    }
-                                    return null;
-                                  },
                                 ),
                               ),
                               IconButton(

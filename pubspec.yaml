@@ -18,6 +18,8 @@ dependencies:
   firebase_storage: ^12.3.7
   fluttertoast: ^8.2.8
   flutter_launcher_icons: ^0.14.2
+  flutter_image_compress: ^2.0.3  # Use the latest version
+
 
 
 dev_dependencies:
