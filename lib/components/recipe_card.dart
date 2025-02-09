@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/widgets/recipe_details.dart';
 
-import '../screens/widgets/recipe_details_new.dart';
+import '../screens/widgets/recipe_details.dart';
 
 class RecipeCard extends StatelessWidget {
   final String? recipeId;
@@ -28,7 +28,7 @@ class RecipeCard extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RecipeDetailsNew(
+              builder: (context) => RecipeDetails(
                 recipeId: recipeId,
                   title: title,
                   notes: notes,
